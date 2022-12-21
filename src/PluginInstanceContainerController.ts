@@ -27,7 +27,7 @@ export class PluginInstanceContainerController implements IContainerController {
 
   getEnv() {
     let pg_config = {
-      email: "admin@gluestack.io",
+      email: "admin@gluestack.app",
       password: "password",
     };
 

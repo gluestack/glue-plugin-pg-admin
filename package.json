@@ -1,6 +1,6 @@
 {
   "name": "@gluestack/glue-plugin-pg-admin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "pg-admin plugin for gluestack framework",
   "repository": {
     "type": "git",

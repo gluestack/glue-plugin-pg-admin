@@ -52,7 +52,7 @@ var PluginInstanceContainerController = (function () {
     };
     PluginInstanceContainerController.prototype.getEnv = function () {
         var pg_config = {
-            email: "admin@gluestack.io",
+            email: "admin@gluestack.app",
             password: "password"
         };
         if (!this.callerInstance.gluePluginStore.get("pg_config") || !this.callerInstance.gluePluginStore.get("pg_config").email)
