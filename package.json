@@ -1,6 +1,6 @@
 {
   "name": "@gluestack/glue-plugin-pg-admin",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "pg-admin plugin for gluestack framework",
   "repository": {
     "type": "git",
@@ -13,8 +13,8 @@
   "author": "Syed Yaseen",
   "license": "ISC",
   "dependencies": {
-    "@gluestack/framework": "^0.0.14",
-    "@gluestack/helpers": "^0.0.8",
+    "@gluestack/framework": "^0.0.x",
+    "@gluestack/helpers": "^0.0.x",
     "@types/node": "^18.11.17"
   },
   "main": "dist/src/index.js",
@@ -24,9 +24,9 @@
   },
   "devDependencies": {
     "typescript": "^4.9.4",
-    "@gluestack/framework": "^0.0.14"
+    "@gluestack/framework": "^0.0.x"
   },
   "peerDependencies": {
-    "@gluestack/framework": "^0.0.14"
+    "@gluestack/glue-plugin-postgres": "^0.0.x"
   }
 }
