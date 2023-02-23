@@ -52,15 +52,15 @@ var PluginInstanceContainerController = (function () {
         return this.callerInstance;
     };
     PluginInstanceContainerController.prototype.getEnv = function () {
-        var pg_config = pgAdminConfig_1.defaultConfig;
-        if (!this.callerInstance.gluePluginStore.get("pg_config") ||
-            !this.callerInstance.gluePluginStore.get("pg_config").username)
-            this.callerInstance.gluePluginStore.set("pg_config", pg_config);
-        pg_config = this.callerInstance.gluePluginStore.get("pg_config");
+        var pgadmin_config = pgAdminConfig_1.defaultConfig;
+        if (!this.callerInstance.gluePluginStore.get("pgadmin_config") ||
+            !this.callerInstance.gluePluginStore.get("pgadmin_config").PGADMIN_DEFAULT_EMAIL)
+            this.callerInstance.gluePluginStore.set("pgadmin_config", pgadmin_config);
+        pgadmin_config = this.callerInstance.gluePluginStore.get("pgadmin_config");
         return {
-            PGADMIN_DEFAULT_EMAIL: pg_config.username,
-            PGADMIN_DEFAULT_PASSWORD: pg_config.password,
-            SCRIPT_NAME: pg_config.scriptName
+            PGADMIN_DEFAULT_EMAIL: pgadmin_config.PGADMIN_DEFAULT_EMAIL,
+            PGADMIN_DEFAULT_PASSWORD: pgadmin_config.PGADMIN_DEFAULT_PASSWORD,
+            SCRIPT_NAME: pgadmin_config.SCRIPT_NAME
         };
     };
     PluginInstanceContainerController.prototype.getDockerJson = function () {

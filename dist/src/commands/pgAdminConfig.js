@@ -39,9 +39,9 @@ exports.__esModule = true;
 exports.writeInstance = exports.defaultConfig = void 0;
 var prompts = require("prompts");
 exports.defaultConfig = {
-    username: "admin@gluestack.com",
-    password: "password",
-    scriptName: "pgadmin"
+    PGADMIN_DEFAULT_EMAIL: "admin@gluestack.com",
+    PGADMIN_DEFAULT_PASSWORD: "password",
+    SCRIPT_NAME: "/backend/pgadmin"
 };
 var getNewInstanceQuestions = function () {
     return [
@@ -49,21 +49,21 @@ var getNewInstanceQuestions = function () {
             type: "text",
             name: "PGADMIN_DEFAULT_EMAIL",
             message: "What would be your PG Admin's username?",
-            initial: exports.defaultConfig.username,
+            initial: exports.defaultConfig.PGADMIN_DEFAULT_EMAIL,
             validate: function (value) { return (value.length > 0) ? true : false; }
         },
         {
             type: "text",
             name: "PGADMIN_DEFAULT_PASSWORD",
             message: "What would be your PG Admin's password?",
-            initial: exports.defaultConfig.password,
+            initial: exports.defaultConfig.PGADMIN_DEFAULT_PASSWORD,
             validate: function (value) { return (value.length > 0) ? true : false; }
         },
         {
             type: "text",
             name: "SCRIPT_NAME",
             message: "What would be your PG Admin's URI?",
-            initial: exports.defaultConfig.scriptName,
+            initial: exports.defaultConfig.SCRIPT_NAME,
             validate: function (value) { return (value.length > 0) ? true : false; }
         }
     ];

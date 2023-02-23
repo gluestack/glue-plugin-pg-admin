@@ -27,20 +27,20 @@ export class PluginInstanceContainerController implements IContainerController {
   }
 
   getEnv() {
-    let pg_config = defaultConfig;
+    let pgadmin_config = defaultConfig;
 
     if (
-      !this.callerInstance.gluePluginStore.get("pg_config") ||
-      !this.callerInstance.gluePluginStore.get("pg_config").username
+      !this.callerInstance.gluePluginStore.get("pgadmin_config") ||
+      !this.callerInstance.gluePluginStore.get("pgadmin_config").PGADMIN_DEFAULT_EMAIL
     )
-      this.callerInstance.gluePluginStore.set("pg_config", pg_config);
+      this.callerInstance.gluePluginStore.set("pgadmin_config", pgadmin_config);
 
-    pg_config = this.callerInstance.gluePluginStore.get("pg_config");
+    pgadmin_config = this.callerInstance.gluePluginStore.get("pgadmin_config");
 
     return {
-      PGADMIN_DEFAULT_EMAIL: pg_config.username,
-      PGADMIN_DEFAULT_PASSWORD: pg_config.password,
-      SCRIPT_NAME: pg_config.scriptName,
+      PGADMIN_DEFAULT_EMAIL: pgadmin_config.PGADMIN_DEFAULT_EMAIL,
+      PGADMIN_DEFAULT_PASSWORD: pgadmin_config.PGADMIN_DEFAULT_PASSWORD,
+      SCRIPT_NAME: pgadmin_config.SCRIPT_NAME
     };
   }
 

@@ -10,9 +10,9 @@ interface IQuestion {
 }
 
 export const defaultConfig = {
-  username: "admin@gluestack.com",
-  password: "password",
-  scriptName: "pgadmin"
+  PGADMIN_DEFAULT_EMAIL: "admin@gluestack.com",
+  PGADMIN_DEFAULT_PASSWORD: "password",
+  SCRIPT_NAME: "/backend/pgadmin"
 };
 
 const getNewInstanceQuestions = (): IQuestion[] => {
@@ -21,21 +21,21 @@ const getNewInstanceQuestions = (): IQuestion[] => {
       type: "text",
       name: "PGADMIN_DEFAULT_EMAIL",
       message: "What would be your PG Admin's username?",
-      initial: defaultConfig.username,
+      initial: defaultConfig.PGADMIN_DEFAULT_EMAIL,
       validate: (value: string) => (value.length > 0) ? true : false
     },
     {
       type: "text",
       name: "PGADMIN_DEFAULT_PASSWORD",
       message: "What would be your PG Admin's password?",
-      initial: defaultConfig.password,
+      initial: defaultConfig.PGADMIN_DEFAULT_PASSWORD,
       validate: (value: string) => (value.length > 0) ? true : false
     },
     {
       type: "text",
       name: "SCRIPT_NAME",
       message: "What would be your PG Admin's URI?",
-      initial: defaultConfig.scriptName,
+      initial: defaultConfig.SCRIPT_NAME,
       validate: (value: string) => (value.length > 0) ? true : false
     }
   ];
