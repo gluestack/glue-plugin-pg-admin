@@ -42,9 +42,11 @@ exports.__esModule = true;
 exports.GlueStackPlugin = void 0;
 var package_json_1 = __importDefault(require("../package.json"));
 var PluginInstance_1 = require("./PluginInstance");
+var write_env_1 = require("./helpers/write-env");
+var pgAdminConfig_1 = require("./commands/pgAdminConfig");
 var GlueStackPlugin = (function () {
     function GlueStackPlugin(app, gluePluginStore) {
-        this.type = 'devonly';
+        this.type = "devonly";
         this.app = app;
         this.instances = [];
         this.gluePluginStore = gluePluginStore;
@@ -66,16 +68,33 @@ var GlueStackPlugin = (function () {
         return "".concat(process.cwd(), "/node_modules/").concat(this.getName(), "/template");
     };
     GlueStackPlugin.prototype.getInstallationPath = function (target) {
-        return "";
+        return "./backend/databases/".concat(target);
     };
     GlueStackPlugin.prototype.runPostInstall = function (instanceName, target) {
         return __awaiter(this, void 0, void 0, function () {
+            var postgresPlugin, instance;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, this.app.createPluginInstance(this, instanceName, this.getTemplateFolderPath(), target)];
+                    case 0:
+                        postgresPlugin = this.app.getPluginByName("@gluestack/glue-plugin-postgres");
+                        if (!postgresPlugin || !postgresPlugin.getInstances().length) {
+                            console.log("\x1b[36m");
+                            console.log("Install postgres instance: `node glue add postgres ".concat(instanceName, "-postgres`"));
+                            console.log("\x1b[31m");
+                            throw new Error("Postgres instance not installed from `@gluestack/glue-plugin-postgres`");
+                        }
+                        return [4, this.app.createPluginInstance(this, instanceName, this.getTemplateFolderPath(), target)];
                     case 1:
+                        instance = _a.sent();
+                        if (!instance) return [3, 4];
+                        return [4, (0, pgAdminConfig_1.writeInstance)(instance)];
+                    case 2:
                         _a.sent();
-                        return [2];
+                        return [4, (0, write_env_1.writeEnv)(instance)];
+                    case 3:
+                        _a.sent();
+                        _a.label = 4;
+                    case 4: return [2];
                 }
             });
         });

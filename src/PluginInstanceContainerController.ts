@@ -3,6 +3,7 @@ import IApp from "@gluestack/framework/types/app/interface/IApp";
 import IInstance from "@gluestack/framework/types/plugin/interface/IInstance";
 import IContainerController from "@gluestack/framework/types/plugin/interface/IContainerController";
 
+import { defaultConfig } from "./commands/pgAdminConfig";
 export class PluginInstanceContainerController implements IContainerController {
   app: IApp;
   status: "up" | "down" = "down";
@@ -17,7 +18,7 @@ export class PluginInstanceContainerController implements IContainerController {
     this.setStatus(this.callerInstance.gluePluginStore.get("status"));
     this.setPortNumber(this.callerInstance.gluePluginStore.get("port_number"));
     this.setContainerId(
-      this.callerInstance.gluePluginStore.get("container_id"),
+      this.callerInstance.gluePluginStore.get("container_id")
     );
   }
 
@@ -26,52 +27,50 @@ export class PluginInstanceContainerController implements IContainerController {
   }
 
   getEnv() {
-    let pg_config = {
-      email: "admin@gluestack.app",
-      password: "password",
-    };
+    let pg_config = defaultConfig;
 
-    if (!this.callerInstance.gluePluginStore.get("pg_config") || !this.callerInstance.gluePluginStore.get("pg_config").email)
+    if (
+      !this.callerInstance.gluePluginStore.get("pg_config") ||
+      !this.callerInstance.gluePluginStore.get("pg_config").username
+    )
       this.callerInstance.gluePluginStore.set("pg_config", pg_config);
 
     pg_config = this.callerInstance.gluePluginStore.get("pg_config");
 
     return {
-      PGADMIN_DEFAULT_EMAIL: pg_config.email,
+      PGADMIN_DEFAULT_EMAIL: pg_config.username,
       PGADMIN_DEFAULT_PASSWORD: pg_config.password,
+      SCRIPT_NAME: pg_config.scriptName,
     };
   }
 
-  getDockerJson() {
-    return {
-      Image: "dpage/pgadmin4",
-      HostConfig: {
-        PortBindings: {
-          "80/tcp": [
-            {
-              HostPort: this.getPortNumber(true).toString(),
-            },
-          ],
-        },
-      },
-      ExposedPorts: {
-        "80/tcp": {},
-      }
-    };
+  async getDockerJson() {
+    return {};
   }
-
 
   getStatus(): "up" | "down" {
     return this.status;
   }
 
-  getPortNumber(returnDefault?: boolean): number {
-    if (this.portNumber) {
-      return this.portNumber;
-    }
-    if (returnDefault) {
-      return 5050;
-    }
+  //@ts-ignore
+  async getPortNumber(returnDefault?: boolean) {
+    return new Promise((resolve, reject) => {
+      if (this.portNumber) {
+        return resolve(this.portNumber);
+      }
+      let ports =
+        this.callerInstance.callerPlugin.gluePluginStore.get("ports") || [];
+      DockerodeHelper.getPort(5050, ports)
+        .then((port: number) => {
+          this.setPortNumber(port);
+          ports.push(port);
+          this.callerInstance.callerPlugin.gluePluginStore.set("ports", ports);
+          return resolve(this.portNumber);
+        })
+        .catch((e: any) => {
+          reject(e);
+        });
+    });
   }
 
   getContainerId(): string {
@@ -91,7 +90,7 @@ export class PluginInstanceContainerController implements IContainerController {
   setContainerId(containerId: string) {
     this.callerInstance.gluePluginStore.set(
       "container_id",
-      containerId || null,
+      containerId || null
     );
     return (this.containerId = containerId || null);
   }
@@ -104,83 +103,14 @@ export class PluginInstanceContainerController implements IContainerController {
   getConfig(): any { }
 
   async up() {
-    let ports =
-      this.callerInstance.callerPlugin.gluePluginStore.get("ports") || [];
+    this.getEnv();
+    await this.getPortNumber();
 
-    await new Promise(async (resolve, reject) => {
-      DockerodeHelper.getPort(this.getPortNumber(true), ports)
-        .then((port: number) => {
-          this.portNumber = port;
-          DockerodeHelper.up(
-            this.getDockerJson(),
-            this.getEnv(),
-            this.portNumber,
-            this.callerInstance.getName(),
-          )
-            .then(
-              ({
-                status,
-                portNumber,
-                containerId,
-              }: {
-                status: "up" | "down";
-                portNumber: number;
-                containerId: string;
-                dockerfile: string;
-              }) => {
-                DockerodeHelper.generateDockerFile(this.getDockerJson(),
-                  this.getEnv(),
-                  this.callerInstance.getName())
-                this.setStatus(status);
-                this.setPortNumber(portNumber);
-                this.setContainerId(containerId);
-                ports.push(portNumber);
-                this.callerInstance.callerPlugin.gluePluginStore.set(
-                  "ports",
-                  ports,
-                );
-                console.log("\x1b[32m");
-                console.log(`Open http://localhost:${this.getPortNumber()}/ in browser`);
-                console.log();
-                console.log(`Credentials to login in pgAdmin: `);
-                console.log(`email: ${this.getEnv().PGADMIN_DEFAULT_EMAIL}`);
-                console.log(`password: ${this.getEnv().PGADMIN_DEFAULT_PASSWORD}`);
-                console.log("\x1b[0m")
-                console.log();
-                return resolve(true);
-              },
-            )
-            .catch((e: any) => {
-              return reject(e);
-            });
-        })
-        .catch((e: any) => {
-          return reject(e);
-        });
-    });
+    this.setStatus("up");
   }
 
   async down() {
-    let ports =
-      this.callerInstance.callerPlugin.gluePluginStore.get("ports") || [];
-    await new Promise(async (resolve, reject) => {
-      DockerodeHelper.down(this.getContainerId(), this.callerInstance.getName())
-        .then(() => {
-          this.setStatus("down");
-          var index = ports.indexOf(this.getPortNumber());
-          if (index !== -1) {
-            ports.splice(index, 1);
-          }
-          this.callerInstance.callerPlugin.gluePluginStore.set("ports", ports);
-
-          this.setPortNumber(null);
-          this.setContainerId(null);
-          return resolve(true);
-        })
-        .catch((e: any) => {
-          return reject(e);
-        });
-    });
+    this.setStatus("down");
   }
 
   async build() { }
