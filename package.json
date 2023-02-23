@@ -1,6 +1,6 @@
 {
   "name": "@gluestack/glue-plugin-pg-admin",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Create an Application using GlueStack framework",
   "repository": {
     "type": "git",
