@@ -1,31 +1,35 @@
 {
   "name": "@gluestack/glue-plugin-pg-admin",
-  "version": "0.0.6",
-  "description": "pg-admin plugin for gluestack framework",
+  "version": "0.0.7",
+  "description": "Create an Application using GlueStack framework",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gluestack/pg-admin"
+    "url": "https://github.com/gluestack/create-gluestack-app"
   },
   "keywords": [
     "npm",
-    "pg-admin"
+    "create-gluestack-app"
   ],
+  "engines": {
+    "node": ">=18 <19"
+  },
   "license": "ISC",
   "dependencies": {
     "@gluestack/framework": "^0.0.x",
-    "@gluestack/helpers": "^0.0.x",
-    "@types/node": "^18.11.17"
+    "@gluestack/glue-plugin-engine": "^0.0.x",
+    "@gluestack/glue-plugin-router-nginx": "^0.0.x",
+    "@types/node": "^18.14.0",
+    "prompts": "^2.4.2"
+  },
+  "peerDependencies": {
+    "@gluestack/glue-plugin-postgres": "^0.0.x"
   },
   "main": "dist/src/index.js",
   "scripts": {
     "plugin-dev": "tsc --watch",
-    "plugin-build": "tsc"
+    "plugin-build": "tsc --declaration"
   },
   "devDependencies": {
-    "typescript": "^4.9.4",
-    "@gluestack/framework": "^0.0.x"
-  },
-  "peerDependencies": {
-    "@gluestack/glue-plugin-postgres": "^0.0.x"
+    "typescript": "^4.9.5"
   }
 }

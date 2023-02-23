@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.PluginInstanceContainerController = void 0;
 var DockerodeHelper = require("@gluestack/helpers").DockerodeHelper;
+var pgAdminConfig_1 = require("./commands/pgAdminConfig");
 var PluginInstanceContainerController = (function () {
     function PluginInstanceContainerController(app, callerInstance) {
         this.status = "down";
@@ -51,45 +52,48 @@ var PluginInstanceContainerController = (function () {
         return this.callerInstance;
     };
     PluginInstanceContainerController.prototype.getEnv = function () {
-        var pg_config = {
-            email: "admin@gluestack.app",
-            password: "password"
-        };
-        if (!this.callerInstance.gluePluginStore.get("pg_config") || !this.callerInstance.gluePluginStore.get("pg_config").email)
+        var pg_config = pgAdminConfig_1.defaultConfig;
+        if (!this.callerInstance.gluePluginStore.get("pg_config") ||
+            !this.callerInstance.gluePluginStore.get("pg_config").username)
             this.callerInstance.gluePluginStore.set("pg_config", pg_config);
         pg_config = this.callerInstance.gluePluginStore.get("pg_config");
         return {
-            PGADMIN_DEFAULT_EMAIL: pg_config.email,
-            PGADMIN_DEFAULT_PASSWORD: pg_config.password
+            PGADMIN_DEFAULT_EMAIL: pg_config.username,
+            PGADMIN_DEFAULT_PASSWORD: pg_config.password,
+            SCRIPT_NAME: pg_config.scriptName
         };
     };
     PluginInstanceContainerController.prototype.getDockerJson = function () {
-        return {
-            Image: "dpage/pgadmin4",
-            HostConfig: {
-                PortBindings: {
-                    "80/tcp": [
-                        {
-                            HostPort: this.getPortNumber(true).toString()
-                        },
-                    ]
-                }
-            },
-            ExposedPorts: {
-                "80/tcp": {}
-            }
-        };
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, {}];
+            });
+        });
     };
     PluginInstanceContainerController.prototype.getStatus = function () {
         return this.status;
     };
     PluginInstanceContainerController.prototype.getPortNumber = function (returnDefault) {
-        if (this.portNumber) {
-            return this.portNumber;
-        }
-        if (returnDefault) {
-            return 5050;
-        }
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2, new Promise(function (resolve, reject) {
+                        if (_this.portNumber) {
+                            return resolve(_this.portNumber);
+                        }
+                        var ports = _this.callerInstance.callerPlugin.gluePluginStore.get("ports") || [];
+                        DockerodeHelper.getPort(5050, ports)
+                            .then(function (port) {
+                            _this.setPortNumber(port);
+                            ports.push(port);
+                            _this.callerInstance.callerPlugin.gluePluginStore.set("ports", ports);
+                            return resolve(_this.portNumber);
+                        })["catch"](function (e) {
+                            reject(e);
+                        });
+                    })];
+            });
+        });
     };
     PluginInstanceContainerController.prototype.getContainerId = function () {
         return this.containerId;
@@ -113,47 +117,14 @@ var PluginInstanceContainerController = (function () {
     PluginInstanceContainerController.prototype.getConfig = function () { };
     PluginInstanceContainerController.prototype.up = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var ports;
-            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        ports = this.callerInstance.callerPlugin.gluePluginStore.get("ports") || [];
-                        return [4, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
-                                var _this = this;
-                                return __generator(this, function (_a) {
-                                    DockerodeHelper.getPort(this.getPortNumber(true), ports)
-                                        .then(function (port) {
-                                        _this.portNumber = port;
-                                        DockerodeHelper.up(_this.getDockerJson(), _this.getEnv(), _this.portNumber, _this.callerInstance.getName())
-                                            .then(function (_a) {
-                                            var status = _a.status, portNumber = _a.portNumber, containerId = _a.containerId;
-                                            DockerodeHelper.generateDockerFile(_this.getDockerJson(), _this.getEnv(), _this.callerInstance.getName());
-                                            _this.setStatus(status);
-                                            _this.setPortNumber(portNumber);
-                                            _this.setContainerId(containerId);
-                                            ports.push(portNumber);
-                                            _this.callerInstance.callerPlugin.gluePluginStore.set("ports", ports);
-                                            console.log("\x1b[32m");
-                                            console.log("Open http://localhost:".concat(_this.getPortNumber(), "/ in browser"));
-                                            console.log();
-                                            console.log("Credentials to login in pgAdmin: ");
-                                            console.log("email: ".concat(_this.getEnv().PGADMIN_DEFAULT_EMAIL));
-                                            console.log("password: ".concat(_this.getEnv().PGADMIN_DEFAULT_PASSWORD));
-                                            console.log("\x1b[0m");
-                                            console.log();
-                                            return resolve(true);
-                                        })["catch"](function (e) {
-                                            return reject(e);
-                                        });
-                                    })["catch"](function (e) {
-                                        return reject(e);
-                                    });
-                                    return [2];
-                                });
-                            }); })];
+                        this.getEnv();
+                        return [4, this.getPortNumber()];
                     case 1:
                         _a.sent();
+                        this.setStatus("up");
                         return [2];
                 }
             });
@@ -161,36 +132,9 @@ var PluginInstanceContainerController = (function () {
     };
     PluginInstanceContainerController.prototype.down = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var ports;
-            var _this = this;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        ports = this.callerInstance.callerPlugin.gluePluginStore.get("ports") || [];
-                        return [4, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
-                                var _this = this;
-                                return __generator(this, function (_a) {
-                                    DockerodeHelper.down(this.getContainerId(), this.callerInstance.getName())
-                                        .then(function () {
-                                        _this.setStatus("down");
-                                        var index = ports.indexOf(_this.getPortNumber());
-                                        if (index !== -1) {
-                                            ports.splice(index, 1);
-                                        }
-                                        _this.callerInstance.callerPlugin.gluePluginStore.set("ports", ports);
-                                        _this.setPortNumber(null);
-                                        _this.setContainerId(null);
-                                        return resolve(true);
-                                    })["catch"](function (e) {
-                                        return reject(e);
-                                    });
-                                    return [2];
-                                });
-                            }); })];
-                    case 1:
-                        _a.sent();
-                        return [2];
-                }
+                this.setStatus("down");
+                return [2];
             });
         });
     };
