@@ -1,5 +1,5 @@
 const prompts = require("prompts");
-import { PluginInstance } from "..//PluginInstance";
+import { PluginInstance } from "../PluginInstance";
 
 interface IQuestion {
   type: string;
