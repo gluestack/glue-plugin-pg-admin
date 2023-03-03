@@ -20,5 +20,5 @@ jobs:
           event_type: dispatch_website_docs
           message: |
             {
-              "repo": "glue-storage" 
+              "repo": "glue-pg-admin" 
             }
